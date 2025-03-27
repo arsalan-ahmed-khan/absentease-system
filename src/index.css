@@ -1,92 +1,69 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 210 40% 98%;
+    --foreground: 220 20% 17%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 20% 17%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 20% 17%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 220 70% 50%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 215 25% 95%;
+    --secondary-foreground: 220 20% 17%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 15% 90%;
+    --muted-foreground: 220 10% 55%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 220 70% 97%;
+    --accent-foreground: 220 70% 50%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 15% 92%;
+    --input: 220 15% 92%;
+    --ring: 220 70% 50%;
 
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 220 20% 14%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 220 20% 17%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 220 20% 17%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 220 70% 60%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 220 20% 22%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 220 20% 24%;
+    --muted-foreground: 220 10% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 220 20% 24%;
+    --accent-foreground: 220 70% 60%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 220 20% 27%;
+    --input: 220 20% 27%;
+    --ring: 220 70% 60%;
   }
 }
 
@@ -94,8 +71,135 @@
   * {
     @apply border-border;
   }
-
+  
+  html, body {
+    @apply antialiased overflow-x-hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  
   body {
     @apply bg-background text-foreground;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
+  
+  /* Typography Overrides */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+  
+  /* Modern styling */
+  .glass {
+    @apply bg-white/70 dark:bg-black/30 backdrop-blur-md border border-white/20 dark:border-white/10;
+  }
+  
+  .pill {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  }
+  
+  .pill-primary {
+    @apply bg-primary/10 text-primary-foreground border border-primary/20;
+  }
+  
+  .pill-secondary {
+    @apply bg-secondary text-secondary-foreground;
+  }
+}
+
+@layer components {
+  /* Stylized Card */
+  .card-elegant {
+    @apply bg-card rounded-xl shadow-sm border border-border/50 overflow-hidden backdrop-blur-xs;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .card-elegant:hover {
+    @apply shadow-md border-border transform -translate-y-1;
+  }
+  
+  /* Interactive Button */
+  .btn-premium {
+    @apply relative overflow-hidden inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .btn-premium:before {
+    content: "";
+    @apply absolute inset-0 w-full h-full opacity-0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .btn-premium:hover:before {
+    @apply opacity-10;
+  }
+  
+  /* Page transition container */
+  .page-transition {
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .page-enter {
+    @apply animate-fade-in;
+  }
+  
+  .page-exit {
+    @apply animate-scale-down;
+  }
+  
+  /* QR code container */
+  .qr-container {
+    @apply relative p-4 bg-white rounded-xl border border-border/80 shadow-sm;
+  }
+  
+  .qr-timer {
+    @apply absolute -top-3 -right-3 bg-primary text-primary-foreground text-xs font-bold h-8 w-8 rounded-full flex items-center justify-center shadow-sm;
+  }
+  
+  /* Attendance status indicators */
+  .status-present {
+    @apply text-green-600 bg-green-50 ring-1 ring-green-600/20 px-2 py-0.5 rounded text-xs font-medium;
+  }
+  
+  .status-absent {
+    @apply text-red-600 bg-red-50 ring-1 ring-red-600/20 px-2 py-0.5 rounded text-xs font-medium;
+  }
+  
+  .status-late {
+    @apply text-amber-600 bg-amber-50 ring-1 ring-amber-600/20 px-2 py-0.5 rounded text-xs font-medium;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  .shadow-inner-light {
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.2);
+  }
+  
+  .bg-gradient-subtle {
+    @apply bg-gradient-to-br from-background to-muted;
+  }
+  
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    opacity: 0.015;
+  }
+}
+
+/* Font loading optimization */
+@font-face {
+  font-family: 'Inter var';
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+  src: url('https://rsms.me/inter/font-files/Inter-roman.var.woff2?v=3.19') format('woff2');
 }
