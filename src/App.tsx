@@ -9,6 +9,7 @@ import TeacherLogin from "./pages/TeacherLogin";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import StudentScan from "./pages/StudentScan";
 import ParentDashboard from "./pages/ParentDashboard";
+import ParentLogin from "./pages/ParentLogin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/teacher-login" element={<TeacherLogin />} />
           <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
           <Route path="/student-scan" element={<StudentScan />} />
+          <Route path="/parent-login" element={<ParentLogin />} />
           <Route path="/parent-dashboard" element={<ParentDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

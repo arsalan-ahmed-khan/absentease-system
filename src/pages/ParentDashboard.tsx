@@ -72,7 +72,7 @@ const ParentDashboard = () => {
             <div>
               <h1 className="text-3xl font-bold tracking-tight mb-2">Parent Dashboard</h1>
               <p className="text-muted-foreground">
-                Monitor your child's attendance and receive notifications
+                Monitor your child's attendance
               </p>
             </div>
             
@@ -147,7 +147,7 @@ const ParentDashboard = () => {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 gap-6 mb-8">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-medium">Recent Attendance Records</CardTitle>
@@ -182,50 +182,6 @@ const ParentDashboard = () => {
                     ))}
                   </TableBody>
                 </Table>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Notification History</CardTitle>
-                <CardDescription>WhatsApp and email alerts sent</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {notifications.map((notification) => (
-                    <div key={notification.id} className="flex p-4 rounded-lg border bg-card">
-                      <div className="mr-4 flex-shrink-0">
-                        {notification.title.includes("Absence") ? (
-                          <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
-                            <Bell className="h-5 w-5 text-red-600" />
-                          </div>
-                        ) : notification.title.includes("Late") ? (
-                          <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
-                            <Calendar className="h-5 w-5 text-amber-600" />
-                          </div>
-                        ) : (
-                          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                            <Mail className="h-5 w-5 text-blue-600" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between">
-                          <h4 className="text-sm font-medium">{notification.title}</h4>
-                          <span className="text-xs text-muted-foreground">{notification.date}</span>
-                        </div>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {notification.message}
-                        </p>
-                        <div className="mt-2 flex items-center">
-                          <Badge variant="outline" className="text-xs">
-                            {notification.sent ? "Sent via WhatsApp" : "Delivery failed"}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </CardContent>
             </Card>
           </div>
