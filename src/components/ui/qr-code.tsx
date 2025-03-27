@@ -25,14 +25,15 @@ const QRCode: React.FC<QRCodeProps> = ({
   expirationSeconds = 60,
   onExpire,
 }) => {
-  const [QRCodeComponent, setQRCodeComponent] = useState<React.ComponentType<any> | null>(null);
+  const [QRCodeComponent, setQRCodeComponent] = useState<any | null>(null);
   const [timeLeft, setTimeLeft] = useState(expirationSeconds);
   const [expired, setExpired] = useState(false);
 
   // Dynamically import the QRCode library to avoid SSR issues
   useEffect(() => {
     import("qrcode.react").then((module) => {
-      setQRCodeComponent(() => module.QRCode);
+      // Use the default export instead of accessing a property
+      setQRCodeComponent(() => module.default);
     });
   }, []);
 
@@ -96,8 +97,8 @@ const QRCode: React.FC<QRCodeProps> = ({
       </Card>
       
       {showTimer && !expired && (
-        <div className="qr-timer animate-pulse-slow">
-          {timeLeft}
+        <div className="qr-timer mt-2 text-center font-mono text-sm font-medium">
+          {formattedTime()}
         </div>
       )}
     </div>
