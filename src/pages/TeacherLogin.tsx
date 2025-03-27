@@ -66,18 +66,6 @@ const TeacherLogin = () => {
     }, 1000);
   };
 
-  // Demo login for quick access
-  const handleDemoLogin = () => {
-    setEmail("teacher@example.com");
-    setPassword("password123");
-    // Wait a bit to show the fields populated before submitting
-    setTimeout(() => {
-      toast.success("Demo credentials applied", {
-        description: "Click 'Sign In' to continue"
-      });
-    }, 300);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <div className="absolute inset-0 bg-noise pointer-events-none"></div>
@@ -175,17 +163,9 @@ const TeacherLogin = () => {
               </form>
             </CardContent>
             <CardFooter className="flex flex-col border-t bg-muted/30 px-6 py-4">
-              <p className="text-xs text-muted-foreground mb-2">
-                For demo purposes:
+              <p className="text-xs text-muted-foreground">
+                For this demo, use email: teacher@example.com and password: password123
               </p>
-              <Button
-                variant="outline"
-                className="w-full"
-                type="button"
-                onClick={handleDemoLogin}
-              >
-                Use Demo Credentials
-              </Button>
             </CardFooter>
           </Card>
         </div>

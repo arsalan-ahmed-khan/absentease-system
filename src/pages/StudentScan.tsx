@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from "react";
-import { QrCode, CameraOff, Camera, Check, X } from "lucide-react";
+import { QrCode, CameraOff, Camera, Check, X, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,13 +8,15 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Navbar from "@/components/layout/Navbar";
 
-type ScanState = "initial" | "scanning" | "success" | "error";
+type ScanState = "initial" | "scanning" | "success" | "error" | "verification";
 
 const StudentScan = () => {
   const [studentId, setStudentId] = useState("");
+  const [studentEmail, setStudentEmail] = useState("");
   const [scanState, setScanState] = useState<ScanState>("initial");
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const scannerContainerRef = useRef<HTMLDivElement>(null);
@@ -72,8 +74,13 @@ const StudentScan = () => {
         const isSuccess = Math.random() < 0.8;
         
         if (isSuccess) {
-          // Simulate successful QR scan
-          handleScanSuccess();
+          // Simulate successful QR scan, but now require email verification
+          setScanState("verification");
+          
+          // Simulate sending verification code to the provided email
+          toast.success("QR code scanned successfully", {
+            description: "Please verify your email to complete attendance."
+          });
         } else {
           // Simulate scan error
           handleScanError("Invalid or expired QR code");
@@ -108,6 +115,11 @@ const StudentScan = () => {
       return;
     }
     
+    if (!studentEmail) {
+      handleScanError("Please enter your email address");
+      return;
+    }
+    
     // Simulate a scanned QR code value
     const mockQRValue = JSON.stringify({
       subjectId: "math101",
@@ -127,6 +139,23 @@ const StudentScan = () => {
     
     // Stop the camera
     stopScanner();
+  };
+
+  // Handle email verification
+  const handleVerifyEmail = () => {
+    if (!verificationCode) {
+      toast.error("Please enter the verification code");
+      return;
+    }
+    
+    // Simple validation - in a real app, you would verify against a server
+    if (verificationCode === "123456") {
+      handleScanSuccess();
+    } else {
+      toast.error("Invalid verification code", {
+        description: "Please check your email and try again"
+      });
+    }
   };
 
   // Handle QR scan error
@@ -153,17 +182,29 @@ const StudentScan = () => {
             <div className="text-center space-y-2">
               <h3 className="text-lg font-medium">Ready to Scan</h3>
               <p className="text-muted-foreground max-w-xs mx-auto">
-                Enter your student ID and tap the button below to start scanning the QR code
+                Enter your student ID and email, then tap the button to start scanning
               </p>
             </div>
-            <Button
-              onClick={startScanner}
-              className="w-full max-w-xs flex items-center justify-center gap-2"
-              disabled={!cameraReady || !studentId}
-            >
-              <Camera className="h-4 w-4" />
-              Start Scanning
-            </Button>
+            <div className="space-y-4 w-full">
+              <div className="space-y-2">
+                <Label htmlFor="student-email">Student Email</Label>
+                <Input
+                  id="student-email"
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={studentEmail}
+                  onChange={(e) => setStudentEmail(e.target.value)}
+                />
+              </div>
+              <Button
+                onClick={startScanner}
+                className="w-full max-w-xs flex items-center justify-center gap-2"
+                disabled={!cameraReady || !studentId || !studentEmail}
+              >
+                <Camera className="h-4 w-4" />
+                Start Scanning
+              </Button>
+            </div>
           </div>
         );
         
@@ -208,6 +249,52 @@ const StudentScan = () => {
                 <CameraOff className="h-4 w-4 mr-2" />
                 Cancel
               </Button>
+            </div>
+          </div>
+        );
+      
+      case "verification":
+        return (
+          <div className="flex flex-col items-center justify-center space-y-6 p-8">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full">
+              <Mail className="h-10 w-10 text-blue-600 dark:text-blue-500" />
+            </div>
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-medium">Email Verification</h3>
+              <p className="text-muted-foreground max-w-xs mx-auto">
+                A verification code has been sent to <strong>{studentEmail}</strong>.
+                Please enter the code to complete your attendance.
+              </p>
+            </div>
+            <div className="space-y-4 w-full max-w-xs">
+              <div className="space-y-2">
+                <Label htmlFor="verification-code">Verification Code</Label>
+                <Input
+                  id="verification-code"
+                  placeholder="Enter 6-digit code"
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                  maxLength={6}
+                />
+                <p className="text-xs text-muted-foreground">
+                  For this demo, use code: 123456
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setScanState("initial")}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleVerifyEmail}
+                  className="flex-1"
+                >
+                  Verify
+                </Button>
+              </div>
             </div>
           </div>
         );
@@ -283,7 +370,7 @@ const StudentScan = () => {
             <CardHeader className="pb-2">
               <CardTitle>Attendance Scanner</CardTitle>
               <CardDescription>
-                Enter your student ID and scan the QR code
+                Enter your student ID and email, then scan the QR code
               </CardDescription>
             </CardHeader>
             
