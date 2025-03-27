@@ -32,8 +32,8 @@ const QRCode: React.FC<QRCodeProps> = ({
   // Dynamically import the QRCode library to avoid SSR issues
   useEffect(() => {
     import("qrcode.react").then((module) => {
-      // Use the default export instead of accessing a property
-      setQRCodeComponent(() => module.default);
+      // Access the QRCodeSVG component from the module
+      setQRCodeComponent(() => module.QRCodeSVG);
     });
   }, []);
 
