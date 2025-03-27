@@ -51,17 +51,11 @@ const TeacherLogin = () => {
     
     // Simulate API call
     setTimeout(() => {
-      // For demo, use a simple credential check - but without displaying the credentials
-      if (email === "teacher@example.com" && password === "password123") {
-        toast.success("Login successful", {
-          description: "Welcome back, Teacher!"
-        });
-        navigate("/teacher-dashboard");
-      } else {
-        toast.error("Invalid credentials", {
-          description: "Please check your email and password"
-        });
-      }
+      // In a real app, this would be replaced with an actual API call to validate credentials
+      toast.success("Login successful", {
+        description: "Welcome to your dashboard"
+      });
+      navigate("/teacher-dashboard");
       setIsLoading(false);
     }, 1000);
   };
