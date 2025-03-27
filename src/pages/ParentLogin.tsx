@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Bell } from "lucide-react";
+import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -146,22 +146,6 @@ const ParentLogin = () => {
                 </form>
               ) : (
                 <div className="space-y-6 py-4">
-                  <div className="bg-muted p-4 rounded-lg">
-                    <div className="flex items-start space-x-4">
-                      <div>
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Bell className="h-5 w-5 text-primary" />
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium">Attendance Notifications</h3>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          You'll receive WhatsApp notifications for absences and late arrivals
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium">Parent Name</p>

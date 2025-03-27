@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { QRCodeSVG } from "qrcode.react";
 
 interface QRCodeProps {
   value: string;
@@ -25,17 +26,8 @@ const QRCode: React.FC<QRCodeProps> = ({
   expirationSeconds = 60,
   onExpire,
 }) => {
-  const [QRCodeComponent, setQRCodeComponent] = useState<any | null>(null);
   const [timeLeft, setTimeLeft] = useState(expirationSeconds);
   const [expired, setExpired] = useState(false);
-
-  // Dynamically import the QRCode library to avoid SSR issues
-  useEffect(() => {
-    import("qrcode.react").then((module) => {
-      // Access the QRCodeSVG component from the module
-      setQRCodeComponent(() => module.QRCodeSVG);
-    });
-  }, []);
 
   // Handle countdown timer if enabled
   useEffect(() => {
@@ -56,18 +48,6 @@ const QRCode: React.FC<QRCodeProps> = ({
     return () => clearInterval(timer);
   }, [showTimer, onExpire]);
 
-  if (!QRCodeComponent) {
-    // Return a placeholder while the QRCode component is loading
-    return (
-      <div
-        className={`flex items-center justify-center bg-muted animate-pulse ${className}`}
-        style={{ width: size, height: size }}
-      >
-        <span className="sr-only">Loading QR Code...</span>
-      </div>
-    );
-  }
-
   const formattedTime = () => {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
@@ -81,11 +61,10 @@ const QRCode: React.FC<QRCodeProps> = ({
           expired ? "opacity-50" : "opacity-100"
         } ${className}`}
       >
-        <QRCodeComponent
+        <QRCodeSVG
           value={value}
           size={size}
           level={level}
-          renderAs={renderAs}
           includeMargin={includeMargin}
           className="mx-auto"
         />

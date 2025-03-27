@@ -51,7 +51,7 @@ const TeacherLogin = () => {
     
     // Simulate API call
     setTimeout(() => {
-      // For demo, use a simple credential check
+      // For demo, use a simple credential check - but without displaying the credentials
       if (email === "teacher@example.com" && password === "password123") {
         toast.success("Login successful", {
           description: "Welcome back, Teacher!"
@@ -94,7 +94,7 @@ const TeacherLogin = () => {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="teacher@example.com"
+                    placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
@@ -162,11 +162,6 @@ const TeacherLogin = () => {
                 </Button>
               </form>
             </CardContent>
-            <CardFooter className="flex flex-col border-t bg-muted/30 px-6 py-4">
-              <p className="text-xs text-muted-foreground">
-                For this demo, use email: teacher@example.com and password: password123
-              </p>
-            </CardFooter>
           </Card>
         </div>
       </div>

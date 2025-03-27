@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { QrCode, CameraOff, Camera, Check, X, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { toast } from "sonner";
 import Navbar from "@/components/layout/Navbar";
 import { addAttendance } from "@/lib/firestore";
 
-type ScanState = "initial" | "scanning" | "success" | "error";
+type ScanState = "initial" | "scanning" | "verification" | "success" | "error";
 
 // Mock implementation of scanQRCode function
 const mockScanQRCode = async (): Promise<string> => {
@@ -132,7 +133,7 @@ const StudentScan = () => {
         return subjectId ? [{ id: 1, subjectId }] : [];
       };
       
-            const qrCodeRecords = await fetchQRCodeData(parsedData.subjectId);
+      const qrCodeRecords = await fetchQRCodeData(parsedData.subjectId);
       if (!qrCodeRecords.length) {
         throw new Error("Invalid or expired QR code");
       }

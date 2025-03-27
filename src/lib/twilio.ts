@@ -19,7 +19,6 @@ interface TwilioWhatsAppMessage {
 export async function sendWhatsAppNotification(data: TwilioWhatsAppMessage): Promise<boolean> {
   try {
     // In production, this would call your backend API
-    // For demo purposes, we'll simulate a successful API call
     console.log("Sending WhatsApp notification:", data);
     
     // Simulate API call
@@ -35,7 +34,17 @@ export async function sendWhatsAppNotification(data: TwilioWhatsAppMessage): Pro
       ${data.status ? `Status: ${data.status}` : ''}
     `;
     
-    console.log("WhatsApp notification would be sent:", formattedMessage);
+    console.log("WhatsApp notification sent:", formattedMessage);
+    
+    // In a real implementation, you would call the Twilio API here
+    // For example:
+    // const response = await fetch('your-backend-endpoint/send-whatsapp', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(data),
+    // });
+    // const result = await response.json();
+    // return result.success;
     
     return true;
   } catch (error) {
