@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { QrCode, CameraOff, Camera, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,8 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Navbar from "@/components/layout/Navbar";
+import { addAttendance } from "@/lib/firestore";
 
 type ScanState = "initial" | "scanning" | "success" | "error";
+
+// Mock implementation of scanQRCode function
+const mockScanQRCode = async (): Promise<string> => {
+  return JSON.stringify({ subjectName: "Mathematics" });
+};
 
 const StudentScan = () => {
   const [studentId, setStudentId] = useState("");
@@ -102,31 +107,50 @@ const StudentScan = () => {
   };
 
   // Handle successful QR scan
-  const handleScanSuccess = () => {
+  const handleScanSuccess = async () => {
     if (!studentId) {
       handleScanError("Please enter your student ID");
       return;
     }
-    
-    // Simulate a scanned QR code value
-    const mockQRValue = JSON.stringify({
-      subjectId: "math101",
-      subjectName: "Mathematics 101",
-      timestamp: new Date().toISOString(),
-      sessionId: Math.random().toString(36).substring(2, 10)
-    });
-    
-    setScanResult(mockQRValue);
-    setScanState("success");
-    
-    const parsedData = JSON.parse(mockQRValue);
-    
-    toast.success("Attendance marked successfully", {
-      description: `You're marked present for ${parsedData.subjectName}`
-    });
-    
-    // Stop the camera
-    stopScanner();
+
+    try {
+      // Simulate QR code scanning
+      const qrCodeData = await mockScanQRCode(); // Replace with actual QR code scanning logic
+      const parsedData = JSON.parse(qrCodeData);
+
+      // Validate QR code data from Firestore
+      // Mock implementation of fetchQRCodeData function
+      const fetchQRCodeData = async (subjectId: string): Promise<any[]> => {
+        // Replace this with actual API call or Firestore query
+        return subjectId ? [{ id: 1, subjectId }] : [];
+      };
+      
+            const qrCodeRecords = await fetchQRCodeData(parsedData.subjectId);
+      if (!qrCodeRecords.length) {
+        throw new Error("Invalid or expired QR code");
+      }
+
+      const record = {
+        studentId,
+        subject: parsedData.subjectName,
+        status: "present",
+        timeIn: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toISOString().split("T")[0],
+      };
+
+      await addAttendance(record);
+      setScanResult(qrCodeData);
+      setScanState("success");
+
+      toast.success("Attendance marked successfully", {
+        description: `You're marked present for ${parsedData.subjectName}`
+      });
+
+      stopScanner();
+    } catch (error) {
+      console.error("Error processing QR code:", error);
+      handleScanError("Failed to process QR code. Please try again.");
+    }
   };
 
   // Handle QR scan error

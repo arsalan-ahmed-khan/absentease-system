@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, Download, Filter, LogOut, Sliders, User } from "lucide-react";
@@ -24,61 +23,49 @@ import { toast } from "sonner";
 import Navbar from "@/components/layout/Navbar";
 import QRDisplay from "@/components/attendance/QRDisplay";
 import AttendanceChart from "@/components/attendance/AttendanceChart";
-
-// Mock attendance data
-const mockAttendance = [
-  {
-    id: "1",
-    name: "John Doe",
-    studentId: "S2023001",
-    status: "present",
-    timeIn: "09:05 AM",
-    subject: "Mathematics 101",
-    date: "2023-05-10",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    studentId: "S2023002",
-    status: "absent",
-    timeIn: "-",
-    subject: "Mathematics 101",
-    date: "2023-05-10",
-  },
-  {
-    id: "3",
-    name: "Robert Johnson",
-    studentId: "S2023003",
-    status: "late",
-    timeIn: "09:15 AM",
-    subject: "Mathematics 101",
-    date: "2023-05-10",
-  },
-  {
-    id: "4",
-    name: "Mary Williams",
-    studentId: "S2023004",
-    status: "present",
-    timeIn: "09:02 AM",
-    subject: "Mathematics 101",
-    date: "2023-05-10",
-  },
-  {
-    id: "5",
-    name: "James Brown",
-    studentId: "S2023005",
-    status: "present",
-    timeIn: "09:00 AM",
-    subject: "Mathematics 101",
-    date: "2023-05-10",
-  },
-];
+import { fetchAttendance, updateAttendanceStatus, fetchStudents, fetchTodayClasses } from "@/lib/firestore";
 
 const TeacherDashboard = () => {
-  const [attendance, setAttendance] = useState(mockAttendance);
-  const [filteredAttendance, setFilteredAttendance] = useState(attendance);
+  const [attendance, setAttendance] = useState([]);
+  const [filteredAttendance, setFilteredAttendance] = useState([]);
   const [filter, setFilter] = useState("all");
+  const [totalStudents, setTotalStudents] = useState(0);
+  const [attendanceRate, setAttendanceRate] = useState(0);
+  const [todayClasses, setTodayClasses] = useState([]);
   const navigate = useNavigate();
+
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const today = new Date().toISOString().split("T")[0];
+
+        // Fetch attendance records
+        const records: { id: string; status: string }[] = await fetchAttendance(today);
+        setAttendance(records);
+        setFilteredAttendance(records);
+
+        // Fetch total students
+        const students = await fetchStudents();
+        const total = students.length;
+        setTotalStudents(total);
+
+        // Calculate attendance rate
+        const presentCount = records.filter(record => record.status === "present").length;
+        const rate = total > 0 ? Math.round((presentCount / total) * 100) : 0;
+        setAttendanceRate(rate);
+
+        // Fetch today's classes
+        const classes = await fetchTodayClasses(today);
+        setTodayClasses(classes);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        toast.error("Failed to load dashboard data. Please try again later.");
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   // Apply filter effect
   useEffect(() => {
@@ -96,26 +83,26 @@ const TeacherDashboard = () => {
   };
 
   // Handle attendance status change
-  const handleStatusChange = (studentId: string, newStatus: string) => {
-    const updatedAttendance = attendance.map(student => {
-      if (student.id === studentId) {
-        return {
-          ...student,
-          status: newStatus,
-          timeIn: newStatus === "present" ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "-"
-        };
+  const handleStatusChange = async (studentId: string, newStatus: string) => {
+    const record = attendance.find(student => student.studentId === studentId);
+    if (record) {
+      const timeIn = newStatus === "present" ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "-";
+      try {
+        await updateAttendanceStatus(record.id, newStatus, timeIn);
+        toast.success("Attendance updated", {
+          description: `Status updated successfully for student ${studentId}`
+        });
+        setAttendance(prev => prev.map(student => student.studentId === studentId ? { ...student, status: newStatus, timeIn } : student));
+      } catch (error) {
+        console.error("Error updating attendance status:", error);
+        toast.error("Failed to update attendance status. Please try again.");
       }
-      return student;
-    });
-    
-    setAttendance(updatedAttendance);
-    toast.success("Attendance updated", {
-      description: `Status updated successfully for student ${studentId}`
-    });
+    }
   };
 
   // Handle export attendance
   const handleExport = () => {
+    // Implement export logic here
     toast.success("Attendance exported", {
       description: "The attendance report has been exported to CSV"
     });
@@ -168,9 +155,9 @@ const TeacherDashboard = () => {
                 <CardDescription>Registered in your classes</CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="text-4xl font-bold">125</div>
+                <div className="text-4xl font-bold">{totalStudents}</div>
                 <p className="text-xs text-muted-foreground">
-                  Across 5 subjects
+                  Across multiple subjects
                 </p>
               </CardContent>
             </Card>
@@ -181,9 +168,9 @@ const TeacherDashboard = () => {
                 <CardDescription>Average across all subjects</CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="text-4xl font-bold">92%</div>
+                <div className="text-4xl font-bold">{attendanceRate}%</div>
                 <p className="text-xs text-muted-foreground">
-                  <span className="text-green-600">↑ 3%</span> compared to last month
+                  <span className="text-green-600">↑ Compared to last month</span>
                 </p>
               </CardContent>
             </Card>
@@ -191,12 +178,12 @@ const TeacherDashboard = () => {
             <Card className="animate-fade-in [animation-delay:400ms]">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-medium">Today's Classes</CardTitle>
-                <CardDescription>May 10, 2023</CardDescription>
+                <CardDescription>{new Date().toLocaleDateString()}</CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="text-4xl font-bold">3</div>
+                <div className="text-4xl font-bold">{todayClasses.length}</div>
                 <p className="text-xs text-muted-foreground">
-                  Next class: <span className="font-medium">Physics 201 at 11:00 AM</span>
+                  Next class: <span className="font-medium">{todayClasses[0]?.name || "No classes"} at {todayClasses[0]?.time || "N/A"}</span>
                 </p>
               </CardContent>
             </Card>

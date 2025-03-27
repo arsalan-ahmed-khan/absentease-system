@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell, Calendar, LogOut, Mail, User } from "lucide-react";
 import { 
   Table, 
@@ -30,77 +29,33 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import AttendanceChart from "@/components/attendance/AttendanceChart";
-
-// Mock attendance records
-const mockAttendanceRecords = [
-  {
-    id: "1",
-    date: "May 10, 2023",
-    subject: "Mathematics 101",
-    status: "present",
-    time: "09:05 AM"
-  },
-  {
-    id: "2",
-    date: "May 10, 2023",
-    subject: "Physics 201",
-    status: "present",
-    time: "11:02 AM"
-  },
-  {
-    id: "3",
-    date: "May 9, 2023",
-    subject: "Chemistry 101",
-    status: "absent",
-    time: "-"
-  },
-  {
-    id: "4",
-    date: "May 9, 2023",
-    subject: "Computer Science 102",
-    status: "present",
-    time: "02:00 PM"
-  },
-  {
-    id: "5",
-    date: "May 8, 2023",
-    subject: "Mathematics 101",
-    status: "late",
-    time: "09:12 AM"
-  }
-];
-
-// Mock notifications
-const mockNotifications = [
-  {
-    id: "1",
-    title: "Absence Notification",
-    message: "Your child was absent for Chemistry 101 on May 9, 2023",
-    date: "May 9, 2023",
-    sent: true
-  },
-  {
-    id: "2",
-    title: "Late Arrival",
-    message: "Your child arrived late for Mathematics 101 on May 8, 2023",
-    date: "May 8, 2023",
-    sent: true
-  },
-  {
-    id: "3",
-    title: "Low Attendance Warning",
-    message: "Your child's attendance in Chemistry 101 is below 85%",
-    date: "May 7, 2023",
-    sent: true
-  }
-];
+import { fetchAttendanceRecords, fetchNotifications } from "@/lib/firestore"; // Updated imports
 
 const ParentDashboard = () => {
   const [studentName] = useState("Michael Johnson");
   const [studentId] = useState("S2023003");
-  const [attendanceRecords] = useState(mockAttendanceRecords);
-  const [notifications] = useState(mockNotifications);
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch attendance records from Firestore
+        const records = await fetchAttendanceRecords(studentId);
+        setAttendanceRecords(records);
+
+        // Fetch notifications from Firestore
+        const notifications = await fetchNotifications(studentId);
+        setNotifications(notifications);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load data. Please try again later.");
+      }
+    };
+
+    fetchData();
+  }, [studentId]);
 
   const handleLogout = () => {
     toast.info("Logged out successfully");
@@ -214,11 +169,11 @@ const ParentDashboard = () => {
                         <TableCell>{record.date}</TableCell>
                         <TableCell>{record.subject}</TableCell>
                         <TableCell>
-                          <span className={`
-                            ${record.status === "present" ? "status-present" : ""}
-                            ${record.status === "absent" ? "status-absent" : ""}
-                            ${record.status === "late" ? "status-late" : ""}
-                          `}>
+                          <span className={`${
+                            record.status === "present" ? "status-present" : 
+                            record.status === "absent" ? "status-absent" : 
+                            "status-late"
+                          }`}>
                             {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                           </span>
                         </TableCell>
