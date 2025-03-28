@@ -1,5 +1,8 @@
-import { db } from "firebaseConfig.ts";
+import { db } from "../../firebaseConfig.ts";
 import { collection, addDoc, getDocs, query, where, updateDoc, doc } from "firebase/firestore";
+import { userService } from '../services/api';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Add a new student
 export async function addStudent(student: { name: string; studentId: string; class: string }) {
@@ -9,9 +12,18 @@ export async function addStudent(student: { name: string; studentId: string; cla
 
 // Fetch all students
 export async function fetchStudents() {
-  const studentsRef = collection(db, "students");
-  const snapshot = await getDocs(studentsRef);
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  try {
+    // Try the API first
+    const response = await userService.getAll();
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching from API, falling back to Firebase:", error);
+    
+    // Fall back to Firebase
+    const studentsRef = collection(db, "students");
+    const snapshot = await getDocs(studentsRef);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  }
 }
 
 // Add attendance record
